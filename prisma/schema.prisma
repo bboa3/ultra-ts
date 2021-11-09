@@ -1,0 +1,57 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model coordinates {
+  id              Int   @id @default(autoincrement())
+  latitude        String
+  longitude       String
+  address         address @relation(fields: [address_id], references: [id], onDelete: Cascade)
+  address_id      Int
+}
+
+model timezone {
+  id              Int   @id @default(autoincrement())
+  offset          String
+  description     String
+  address         address @relation(fields: [address_id], references: [id], onDelete: Cascade)
+  address_id      Int
+}
+
+model street {
+  id              Int   @id @default(autoincrement())
+  number          Int
+  name            String
+  address         address @relation(fields: [address_id], references: [id], onDelete: Cascade)
+  address_id      Int
+}
+
+model address {
+  id            Int   @id @default(autoincrement())
+  city          String
+  state         String
+  country       String
+  postcode      String
+  street        street?
+  coordinates   coordinates? 
+  timezone      timezone?
+  user          user @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id       Int
+}
+
+model user {
+  id          Int       @id @default(autoincrement())
+  name        String    
+  email       String    @unique
+  birthday    String
+  address     address?
+}
